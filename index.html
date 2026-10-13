@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f4ef">
+  <title>Campus Snack Bar | Point of Sale</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="pos-shell">
+    <header class="topbar">
+      <div class="brand-mark" aria-hidden="true">CS</div>
+      <div>
+        <p class="eyebrow">CAMPUS SNACK BAR</p>
+        <h1>Point of Sale</h1>
+      </div>
+      <div class="status"><span class="status-dot"></span> Register ready</div>
+    </header>
+
+    <div class="workspace">
+      <section class="catalog" aria-labelledby="catalog-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">MENU</p>
+            <h2 id="catalog-title">Select products</h2>
+          </div>
+          <span class="item-count">6 items</span>
+        </div>
+        <div class="product-grid" id="product-grid" aria-label="Available products"></div>
+      </section>
+
+      <aside class="order-panel" aria-labelledby="order-title">
+        <div class="order-heading">
+          <div>
+            <p class="eyebrow">CURRENT SALE</p>
+            <h2 id="order-title">Order summary</h2>
+          </div>
+          <span class="order-badge" id="cart-count" aria-live="polite">0 items</span>
+        </div>
+        <div class="cart-content" id="cart-content" aria-live="polite">
+          <div class="empty-state" id="empty-state">
+            <div class="empty-icon" aria-hidden="true">＋</div>
+            <p class="empty-title">Your order is empty</p>
+            <p class="empty-hint">Choose a product to get started.</p>
+          </div>
+          <div class="cart-list" id="cart-list"></div>
+        </div>
+        <footer class="order-footer">
+          <div class="total-row"><span>Total</span><strong id="cart-total">₱0.00</strong></div>
+          <p class="footer-note">Prices include applicable taxes.</p>
+        </footer>
+      </aside>
+    </div>
+    <footer class="page-footer">Campus Snack Bar <span>·</span> Point of Sale</footer>
+  </main>
+</body>
+</html>

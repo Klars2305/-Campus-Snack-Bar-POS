@@ -1,26 +1,35 @@
-﻿# Campus Snack Bar POS — Stage 3
+﻿# Campus Snack Bar POS — Stage 4
 
-A desktop-friendly local POS built with plain HTML, CSS, and JavaScript. The menu and current transaction stay in browser memory. It uses cash only and has no database, login, inventory, online payment, or external service dependency.
+A desktop-friendly local POS built with plain HTML, CSS, and JavaScript. It includes a welcome page, in-memory product cart, cash-only checkout, digital receipt, and transaction reset. No installation, build step, database, or external service is required.
 
 ## Run
 
-Open `index.html` in a modern browser. No installation, server, or build step is required.
+Open `index.html` in a modern browser and choose **Start Ordering**.
 
-## End-to-end manual checks
+## HCI improvements
 
-1. Add two Classic Burgers and one Soda (Can). Expected: burger subtotal ₱110.00, soda subtotal ₱25.00, total ₱135.00.
-2. Submit with the cash field blank. Expected: “Enter the cash amount received.” No receipt is created.
-3. Enter nonnumeric text, then submit. Expected: a clear valid numeric amount message; no receipt is created. (Number fields may prevent typing nonnumeric characters in some browsers.)
-4. Enter `-1`, then submit. Expected: a negative amount message; no receipt is created.
-5. Enter `134.99`, then submit. Expected: insufficient payment message showing total due ₱135.00; no receipt is created.
-6. Enter `200`, then submit. Expected: payment confirmation and a receipt listing both products, quantities, subtotals, total ₱135.00, cash paid ₱200.00, change ₱65.00, and a `CSB-...` transaction reference.
-7. After payment, confirm cart and cash controls are locked. Select **New Transaction**. Expected: cart and receipt are cleared, cash field and message reset, total returns to ₱0.00, and product selection is enabled again.
-8. Optional exact payment: create a ₱55.00 burger order and pay ₱55.00. Expected: change is ₱0.00.
+- **Consistency and simplicity:** the landing page and register share the same colors, typography, and button styles.
+- **Visibility and feedback:** cart count, totals, payment errors, payment confirmation, and receipt are clearly shown.
+- **Error prevention:** payment details are reviewed in a confirmation dialog before a sale is recorded; paid cart controls lock until a new transaction starts.
+- **Accessibility:** semantic headings and labels, live status messages, invalid-state feedback on the cash field, visible keyboard focus, native modal dialogs, close buttons, and Escape-to-close support.
+- **Clear navigation:** Start Ordering opens the register; Home returns to the landing page while preserving the in-memory sale.
+
+## Manual UI and modal checks
+
+1. Open the page. Expected: welcome landing page with **Start Ordering**. Tab to the button and press Enter; expected: register opens and focus moves to the first product.
+2. Use **Home**, then **Start Ordering** again. Expected: navigation works and the in-memory sale is preserved.
+3. Add two Classic Burgers and one Soda. Expected: subtotals ₱110.00 and ₱25.00; total ₱135.00. Increase and decrease quantities and confirm the figures update.
+4. Try blank, nonnumeric, negative, and insufficient cash. Expected: a clear message for each; no confirmation dialog or receipt appears. Some number fields prevent nonnumeric characters from being typed.
+5. Enter `200` and select **Pay**. Expected: payment confirmation dialog shows total ₱135.00, cash ₱200.00, and change ₱65.00. Choose **Keep Editing**; expected: no payment is recorded and the cart remains editable.
+6. Submit the same payment again. In the dialog, use Tab and Shift+Tab to move through controls; press Escape or use the close button. Expected: dialog closes without recording payment. Submit again and select **Confirm Payment**.
+7. Expected: transaction success dialog appears with a reference; close it with **Done**, its close button, or Escape. The receipt remains in the order summary with products, quantities, subtotals, total, cash, change, and transaction reference.
+8. Select **New Transaction**. Expected: cart, cash field, receipt, and payment message clear; total returns to ₱0.00 and ordering is enabled.
+9. Resize to a narrow or short window. Expected: controls and dialogs remain usable; keyboard focus remains visible.
 
 ## Files
 
-- `index.html` — POS, payment form, receipt, and reset controls
-- `styles.css` — desktop-friendly layout and checkout/receipt styling
-- `app.js` — in-memory cart, payment validation, change calculation, receipt, and transaction reset
+- `index.html` — landing page, register, payment confirmation dialog, and success dialog
+- `styles.css` — consistent desktop-friendly styling, responsive layout, and visible focus states
+- `app.js` — in-memory cart, validation, dialogs, receipt, navigation, and reset behavior
 
-Suggested commit: `feat: complete cash checkout and digital receipts`
+Suggested commit: `feat: add landing page and accessible checkout dialogs`

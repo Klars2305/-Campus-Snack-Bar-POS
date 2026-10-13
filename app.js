@@ -29,6 +29,12 @@ function changeQuantity(productId, amount) {
   const nextQuantity = currentQuantity + amount;
   if (!Number.isSafeInteger(nextQuantity)) return;
 
+  const nextTotal = products.reduce((sum, item) => {
+    const quantity = item.id === productId ? Math.max(0, nextQuantity) : (cart.get(item.id) || 0);
+    return sum + item.price * quantity;
+  }, 0);
+  if (!Number.isSafeInteger(nextTotal)) return;
+
   if (nextQuantity <= 0) cart.delete(productId);
   else cart.set(productId, nextQuantity);
   renderCart();

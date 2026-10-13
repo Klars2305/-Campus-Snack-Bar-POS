@@ -3,69 +3,255 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f5f4ef">
+  <meta name="theme-color" content="#6d28d9">
   <title>Campus Snack Bar | Point of Sale</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script src="app.js" defer></script>
 </head>
 <body>
   <main class="pos-shell">
-    <header class="topbar">
-      <div class="brand-mark" aria-hidden="true">CS</div>
-      <div>
-        <p class="eyebrow">CAMPUS SNACK BAR</p>
-        <h1>Point of Sale</h1>
-      </div>
-      <div class="status"><span class="status-dot"></span> Register ready</div>
-    </header>
-
-    <div class="workspace">
-      <section class="catalog" aria-labelledby="catalog-title">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">MENU</p>
-            <h2 id="catalog-title">Select products</h2>
-          </div>
-          <span class="item-count">6 items</span>
+    <section id="landing-page" class="landing" aria-labelledby="landing-title">
+      <header class="landing-header">
+        <div class="brand-mark" aria-hidden="true">
+          <svg class="brand-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
         </div>
-        <div class="product-grid" id="product-grid" aria-label="Available products"></div>
-      </section>
-
-      <aside class="order-panel" aria-labelledby="order-title">
-        <div class="order-heading">
-          <div>
-            <p class="eyebrow">CURRENT SALE</p>
-            <h2 id="order-title">Order summary</h2>
-          </div>
-          <span class="order-badge" id="cart-count" aria-live="polite">0 items</span>
+        <div>
+          <p class="eyebrow">CAMPUS SNACK BAR</p>
+          <p class="landing-brand-name">Fresh favorites, ready to go</p>
         </div>
-        <div class="cart-content" id="cart-content" aria-live="polite">
-          <div class="empty-state" id="empty-state">
-            <div class="empty-icon" aria-hidden="true">＋</div>
-            <p class="empty-title">Your order is empty</p>
-            <p class="empty-hint">Choose a product to get started.</p>
+      </header>
+      <div class="landing-content">
+        <div class="landing-hero-card">
+          <div class="landing-badge">
+            <span class="badge-dot"></span>
+            QUICK · SIMPLE · ON CAMPUS
           </div>
-          <div class="cart-list" id="cart-list"></div>
-        </div>
-        <footer class="order-footer">
-          <div class="total-row"><span>Total</span><strong id="cart-total">₱0.00</strong></div>
-          <p class="footer-note">Prices include applicable taxes.</p>
-        </footer>
-        <section class="checkout" aria-label="Cash payment">
-          <form id="payment-form" novalidate>
-            <label for="cash-input">Cash received</label>
-            <div class="payment-row">
-              <input id="cash-input" name="cash" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" aria-describedby="payment-message">
-              <button id="pay-button" class="pay-button" type="submit">Pay</button>
+          <h1 id="landing-title">A good break<br><span class="gradient-text">starts here.</span></h1>
+          <p class="landing-copy">Choose your favorite snack, review your order in real time, and pay with cash at the counter.</p>
+          
+          <div class="landing-features">
+            <div class="feature-item">
+              <span class="feature-icon">⚡</span>
+              <span>Fast Checkout</span>
             </div>
-          </form>
-          <p id="payment-message" class="payment-message" role="status" aria-live="polite"></p>
-          <section id="receipt" class="receipt" aria-labelledby="receipt-title" hidden></section>
-          <button id="new-transaction" class="new-transaction" type="button" hidden>New Transaction</button>
+            <div class="feature-item">
+              <span class="feature-icon">🍔</span>
+              <span>Campus Favorites</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">💵</span>
+              <span>Cash at Counter</span>
+            </div>
+          </div>
+
+          <button id="start-ordering" class="start-button" type="button">
+            <span>Start Ordering</span>
+            <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m9 18 6-6-6-6"/>
+            </svg>
+          </button>
+          <p class="landing-note">Six campus favorites · Instant receipt calculation</p>
+        </div>
+      </div>
+      <footer class="page-footer">Campus Snack Bar <span>·</span> Point of Sale</footer>
+    </section>
+
+    <div id="pos-app" class="pos-app" hidden>
+      <header class="topbar">
+        <div class="brand-group">
+          <div class="brand-mark" aria-hidden="true">
+            <svg class="brand-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+          </div>
+          <div>
+            <p class="eyebrow">CAMPUS SNACK BAR</p>
+            <h1>Point of Sale</h1>
+          </div>
+        </div>
+        <nav class="status" aria-label="POS navigation">
+          <button id="back-to-home" class="nav-button" type="button">
+            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <span>Home</span>
+          </button>
+          <span class="status-ready"><span class="status-dot"></span> Register ready</span>
+        </nav>
+      </header>
+
+      <div class="workspace">
+        <section class="catalog" aria-labelledby="catalog-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">MENU</p>
+              <h2 id="catalog-title">
+                <svg class="heading-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="7" height="7" x="3" y="3" rx="1.5"/><rect width="7" height="7" x="14" y="3" rx="1.5"/><rect width="7" height="7" x="14" y="14" rx="1.5"/><rect width="7" height="7" x="3" y="14" rx="1.5"/>
+                </svg>
+                Select products
+              </h2>
+            </div>
+            <span class="item-count">
+              <svg class="pill-icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <circle cx="12" cy="12" r="8"/>
+              </svg>
+              6 items
+            </span>
+          </div>
+          <div class="product-grid" id="product-grid" role="group" aria-label="Available products"></div>
         </section>
-      </aside>
+
+        <aside class="order-panel" aria-labelledby="order-title">
+          <div class="order-heading">
+            <div>
+              <p class="eyebrow">CURRENT SALE</p>
+              <h2 id="order-title">
+                <svg class="heading-icon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+                </svg>
+                Order summary
+              </h2>
+            </div>
+            <span class="order-badge" id="cart-count" aria-live="polite">0 items</span>
+          </div>
+          <div class="cart-content" id="cart-content" aria-live="polite">
+            <div class="empty-state" id="empty-state">
+              <div class="empty-icon-wrap" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
+                  <line x1="12" y1="13" x2="12" y2="17"/><line x1="10" y1="15" x2="14" y2="15"/>
+                </svg>
+              </div>
+              <p class="empty-title">Your order is empty</p>
+              <p class="empty-hint">Choose a product from the menu to get started.</p>
+            </div>
+            <div class="cart-list" id="cart-list"></div>
+          </div>
+          <footer class="order-footer">
+            <div class="total-row">
+              <span class="total-label">
+                <svg class="row-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+                Total
+              </span>
+              <strong id="cart-total">₱0.00</strong>
+            </div>
+            <p class="footer-note">Prices include applicable taxes.</p>
+          </footer>
+          <section class="checkout" aria-label="Cash payment">
+            <form id="payment-form" novalidate>
+              <div class="payment-label-row">
+                <label for="cash-input">
+                  <svg class="label-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/>
+                  </svg>
+                  Cash received
+                </label>
+              </div>
+              <div class="payment-row">
+                <div class="input-wrapper">
+                  <span class="currency-prefix" aria-hidden="true">₱</span>
+                  <input id="cash-input" name="cash" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" aria-invalid="false" aria-describedby="payment-message">
+                </div>
+                <button id="pay-button" class="pay-button" type="submit">
+                  <span>Pay</span>
+                  <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="quick-cash-row" id="quick-cash-row" aria-label="Quick cash amounts">
+                <button type="button" class="quick-chip" data-cash-action="exact" disabled>Exact</button>
+                <button type="button" class="quick-chip" data-cash-amount="50" disabled>₱50</button>
+                <button type="button" class="quick-chip" data-cash-amount="100" disabled>₱100</button>
+                <button type="button" class="quick-chip" data-cash-amount="200" disabled>₱200</button>
+                <button type="button" class="quick-chip" data-cash-amount="500" disabled>₱500</button>
+              </div>
+            </form>
+            <p id="payment-message" class="payment-message" role="status" aria-live="polite"></p>
+            <section id="receipt" class="receipt" aria-label="Digital receipt" hidden></section>
+            <button id="new-transaction" class="new-transaction" type="button" hidden>
+              <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>
+              </svg>
+              <span>New Transaction</span>
+            </button>
+          </section>
+        </aside>
+      </div>
+      <footer class="page-footer">Campus Snack Bar <span>·</span> Point of Sale</footer>
     </div>
-    <footer class="page-footer">Campus Snack Bar <span>·</span> Point of Sale</footer>
   </main>
+
+  <dialog id="payment-confirmation" class="modal" aria-labelledby="payment-confirmation-title" aria-describedby="payment-confirmation-copy">
+    <div class="modal-surface">
+      <button class="modal-close" type="button" data-close-modal aria-label="Close payment confirmation">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+      <div class="modal-header-icon" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+        </svg>
+      </div>
+      <p class="eyebrow">REVIEW PAYMENT</p>
+      <h2 id="payment-confirmation-title">Confirm cash payment</h2>
+      <p id="payment-confirmation-copy" class="modal-copy">Check the total and cash received before confirming this sale.</p>
+      <dl class="confirmation-summary">
+        <div><dt>Order total</dt><dd id="confirm-total">₱0.00</dd></div>
+        <div><dt>Cash received</dt><dd id="confirm-cash">₱0.00</dd></div>
+        <div class="change-row"><dt>Change due</dt><dd id="confirm-change" class="highlight-change">₱0.00</dd></div>
+      </dl>
+      <div class="modal-actions">
+        <button id="cancel-payment" class="secondary-button" type="button">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m15 18-6-6 6-6"/>
+          </svg>
+          <span>Keep Editing</span>
+        </button>
+        <button id="confirm-payment" class="pay-button" type="button">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>Confirm Payment</span>
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="transaction-success" class="modal success-modal" aria-labelledby="transaction-success-title" aria-describedby="transaction-success-copy">
+    <div class="modal-surface">
+      <button class="modal-close" type="button" data-close-modal aria-label="Close success message">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+      <div class="success-mark-container">
+        <div class="success-mark" aria-hidden="true">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+      </div>
+      <p class="eyebrow">PAYMENT COMPLETE</p>
+      <h2 id="transaction-success-title">Thank you!</h2>
+      <p id="transaction-success-copy" class="modal-copy">Your payment is confirmed and the digital receipt is ready in the order summary.</p>
+      <p id="success-reference" class="success-reference"></p>
+      <button id="close-success" class="pay-button modal-done" type="button">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <span>Done</span>
+      </button>
+    </div>
+  </dialog>
 </body>
 </html>

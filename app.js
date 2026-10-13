@@ -10,10 +10,23 @@ const products = [
 const cart = new Map();
 const peso = new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' });
 const productGrid = document.querySelector('#product-grid');
+let isPaid = false;
+
+function formatCents(cents) {
+  const whole = Math.floor(cents / 100);
+  const fraction = String(cents % 100).padStart(2, '0');
+  return peso.formatToParts(whole)
+    .map((part) => part.type === 'fraction' ? fraction : part.value)
+    .join('');
+}
+
+function getCartTotal() {
+  return products.reduce((sum, product) => sum + product.price * (cart.get(product.id) || 0), 0);
+}
 
 function renderProducts() {
   productGrid.innerHTML = products.map((product) => `
-    <button class="product-card" type="button" data-product-id="${product.id}" aria-label="Add ${product.name}, ${peso.format(product.price)}">
+    <button class="product-card" type="button" data-product-id="${product.id}" aria-label="Add ${product.name}, ${peso.format(product.price)}" ${isPaid ? 'disabled' : ''}>
       <span class="product-icon" aria-hidden="true">${product.icon}</span>
       <span class="product-name">${product.name}</span>
       <span class="product-price">${peso.format(product.price)}</span>
@@ -23,7 +36,7 @@ function renderProducts() {
 
 function changeQuantity(productId, amount) {
   const product = products.find((item) => item.id === productId);
-  if (!product || !Number.isSafeInteger(amount) || amount === 0) return;
+  if (isPaid || !product || !Number.isSafeInteger(amount) || amount === 0) return;
 
   const currentQuantity = cart.get(productId) || 0;
   const nextQuantity = currentQuantity + amount;
@@ -33,10 +46,11 @@ function changeQuantity(productId, amount) {
     const quantity = item.id === productId ? Math.max(0, nextQuantity) : (cart.get(item.id) || 0);
     return sum + item.price * quantity;
   }, 0);
-  if (!Number.isSafeInteger(nextTotal)) return;
+  if (!Number.isSafeInteger(nextTotal) || nextTotal > Math.floor(Number.MAX_SAFE_INTEGER / 100)) return;
 
   if (nextQuantity <= 0) cart.delete(productId);
   else cart.set(productId, nextQuantity);
+  clearPaymentMessage();
   renderCart();
 }
 
@@ -44,7 +58,7 @@ function renderCart() {
   const cartList = document.querySelector('#cart-list');
   const entries = products.filter((product) => cart.has(product.id));
   const itemCount = entries.reduce((sum, product) => sum + cart.get(product.id), 0);
-  const total = entries.reduce((sum, product) => sum + product.price * cart.get(product.id), 0);
+  const total = getCartTotal();
 
   document.querySelector('#empty-state').hidden = entries.length > 0;
   document.querySelector('#cart-count').textContent = `${itemCount} ${itemCount === 1 ? 'item' : 'items'}`;
@@ -60,14 +74,122 @@ function renderCart() {
         <div class="cart-item-side">
           <span class="line-subtotal">${peso.format(product.price * quantity)}</span>
           <div class="quantity-control" aria-label="Quantity for ${product.name}">
-            <button class="qty-button" type="button" data-change="-1" data-product-id="${product.id}" aria-label="Remove one ${product.name}">−</button>
+            <button class="qty-button" type="button" data-change="-1" data-product-id="${product.id}" aria-label="Remove one ${product.name}" ${isPaid ? 'disabled' : ''}>−</button>
             <span class="quantity">${quantity}</span>
-            <button class="qty-button" type="button" data-change="1" data-product-id="${product.id}" aria-label="Add one ${product.name}">+</button>
+            <button class="qty-button" type="button" data-change="1" data-product-id="${product.id}" aria-label="Add one ${product.name}" ${isPaid ? 'disabled' : ''}>+</button>
           </div>
         </div>
       </article>
     `;
   }).join('');
+
+  document.querySelector('#cash-input').disabled = isPaid;
+  document.querySelector('#pay-button').disabled = isPaid || entries.length === 0;
+}
+
+function clearPaymentMessage() {
+  const message = document.querySelector('#payment-message');
+  message.textContent = '';
+  message.className = 'payment-message';
+}
+
+function showPaymentError(message) {
+  const output = document.querySelector('#payment-message');
+  output.textContent = message;
+  output.className = 'payment-message';
+}
+
+function createTransactionReference() {
+  const timestamp = new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14);
+  const suffix = Math.floor(Math.random() * 900000 + 100000);
+  return `CSB-${timestamp}-${suffix}`;
+}
+
+function createReceipt(cashCents, changeCents, reference) {
+  const entries = products.filter((product) => cart.has(product.id));
+  const totalCents = getCartTotal() * 100;
+  const rows = entries.map((product) => {
+    const quantity = cart.get(product.id);
+    const subtotalCents = product.price * quantity * 100;
+    return `<div class="receipt-row"><span>${product.name} × ${quantity}</span><strong>${formatCents(subtotalCents)}</strong></div>`;
+  }).join('');
+
+  const receipt = document.querySelector('#receipt');
+  receipt.innerHTML = `
+    <h3 id="receipt-title">Campus Snack Bar</h3>
+    <p class="receipt-reference">Transaction: ${reference}</p>
+    <div class="receipt-items">${rows}</div>
+    <div class="receipt-totals">
+      <div class="receipt-total-row"><span>Total</span><strong>${formatCents(totalCents)}</strong></div>
+      <div class="receipt-total-row"><span>Cash paid</span><strong>${formatCents(cashCents)}</strong></div>
+      <div class="receipt-total-row grand"><span>Change</span><strong>${formatCents(changeCents)}</strong></div>
+    </div>
+    <p class="receipt-note">Payment confirmed. Thank you!</p>
+  `;
+  receipt.hidden = false;
+}
+
+function handlePayment(event) {
+  event.preventDefault();
+  if (isPaid) return;
+  if (cart.size === 0) {
+    showPaymentError('Add at least one product before accepting payment.');
+    return;
+  }
+
+  const rawCash = document.querySelector('#cash-input').value.trim();
+  if (!rawCash) {
+    showPaymentError('Enter the cash amount received.');
+    return;
+  }
+  const cashValue = Number(rawCash);
+  if (!Number.isFinite(cashValue)) {
+    showPaymentError('Enter a valid numeric cash amount.');
+    return;
+  }
+  if (cashValue < 0) {
+    showPaymentError('Cash amount cannot be negative.');
+    return;
+  }
+  const cashCents = Math.round(cashValue * 100);
+  if (!Number.isSafeInteger(cashCents)) {
+    showPaymentError('Cash amount is too large. Enter a smaller amount.');
+    return;
+  }
+
+  const totalCents = getCartTotal() * 100;
+  if (cashCents < totalCents) {
+    showPaymentError(`Insufficient payment. The total due is ${formatCents(totalCents)}.`);
+    return;
+  }
+
+  const changeCents = cashCents - totalCents;
+  if (!Number.isSafeInteger(changeCents)) {
+    showPaymentError('Unable to calculate change for this amount.');
+    return;
+  }
+
+  const reference = createTransactionReference();
+  createReceipt(cashCents, changeCents, reference);
+  const message = document.querySelector('#payment-message');
+  message.textContent = `Payment confirmed. Change due: ${formatCents(changeCents)}.`;
+  message.className = 'payment-message success';
+  isPaid = true;
+  document.querySelector('#new-transaction').hidden = false;
+  renderProducts();
+  renderCart();
+}
+
+function startNewTransaction() {
+  cart.clear();
+  isPaid = false;
+  document.querySelector('#cash-input').value = '';
+  document.querySelector('#receipt').innerHTML = '';
+  document.querySelector('#receipt').hidden = true;
+  document.querySelector('#new-transaction').hidden = true;
+  clearPaymentMessage();
+  renderProducts();
+  renderCart();
 }
 
 productGrid.addEventListener('click', (event) => {
@@ -79,6 +201,9 @@ document.querySelector('#cart-list').addEventListener('click', (event) => {
   const button = event.target.closest('[data-change]');
   if (button) changeQuantity(button.dataset.productId, Number(button.dataset.change));
 });
+
+document.querySelector('#payment-form').addEventListener('submit', handlePayment);
+document.querySelector('#new-transaction').addEventListener('click', startNewTransaction);
 
 renderProducts();
 renderCart();

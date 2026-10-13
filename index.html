@@ -10,13 +10,35 @@
 </head>
 <body>
   <main class="pos-shell">
+    <section id="landing-page" class="landing" aria-labelledby="landing-title">
+      <header class="landing-header">
+        <div class="brand-mark" aria-hidden="true">CS</div>
+        <div>
+          <p class="eyebrow">CAMPUS SNACK BAR</p>
+          <p class="landing-brand-name">Fresh favorites, ready to go</p>
+        </div>
+      </header>
+      <div class="landing-content">
+        <p class="eyebrow">QUICK · SIMPLE · ON CAMPUS</p>
+        <h1 id="landing-title">A good break<br>starts here.</h1>
+        <p class="landing-copy">Choose a snack, review your order, and pay with cash at the counter.</p>
+        <button id="start-ordering" class="start-button" type="button">Start Ordering</button>
+        <p class="landing-note">Six campus favorites · Cash payment</p>
+      </div>
+      <footer class="page-footer">Campus Snack Bar <span>·</span> Point of Sale</footer>
+    </section>
+
+    <div id="pos-app" class="pos-app" hidden>
     <header class="topbar">
       <div class="brand-mark" aria-hidden="true">CS</div>
       <div>
         <p class="eyebrow">CAMPUS SNACK BAR</p>
         <h1>Point of Sale</h1>
       </div>
-      <div class="status"><span class="status-dot"></span> Register ready</div>
+      <nav class="status" aria-label="POS navigation">
+        <button id="back-to-home" class="nav-button" type="button">Home</button>
+        <span class="status-ready"><span class="status-dot"></span> Register ready</span>
+      </nav>
     </header>
 
     <div class="workspace">
@@ -28,7 +50,7 @@
           </div>
           <span class="item-count">6 items</span>
         </div>
-        <div class="product-grid" id="product-grid" aria-label="Available products"></div>
+        <div class="product-grid" id="product-grid" role="group" aria-label="Available products"></div>
       </section>
 
       <aside class="order-panel" aria-labelledby="order-title">
@@ -55,7 +77,7 @@
           <form id="payment-form" novalidate>
             <label for="cash-input">Cash received</label>
             <div class="payment-row">
-              <input id="cash-input" name="cash" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" aria-describedby="payment-message">
+              <input id="cash-input" name="cash" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" aria-invalid="false" aria-describedby="payment-message">
               <button id="pay-button" class="pay-button" type="submit">Pay</button>
             </div>
           </form>
@@ -66,6 +88,33 @@
       </aside>
     </div>
     <footer class="page-footer">Campus Snack Bar <span>·</span> Point of Sale</footer>
+    </div>
   </main>
+
+  <dialog id="payment-confirmation" class="modal" aria-labelledby="payment-confirmation-title" aria-describedby="payment-confirmation-copy">
+    <button class="modal-close" type="button" data-close-modal aria-label="Close payment confirmation">×</button>
+    <p class="eyebrow">REVIEW PAYMENT</p>
+    <h2 id="payment-confirmation-title">Confirm cash payment</h2>
+    <p id="payment-confirmation-copy" class="modal-copy">Check the total and cash received before confirming this sale.</p>
+    <dl class="confirmation-summary">
+      <div><dt>Order total</dt><dd id="confirm-total">₱0.00</dd></div>
+      <div><dt>Cash received</dt><dd id="confirm-cash">₱0.00</dd></div>
+      <div><dt>Change due</dt><dd id="confirm-change">₱0.00</dd></div>
+    </dl>
+    <div class="modal-actions">
+      <button id="cancel-payment" class="secondary-button" type="button">Keep Editing</button>
+      <button id="confirm-payment" class="pay-button" type="button">Confirm Payment</button>
+    </div>
+  </dialog>
+
+  <dialog id="transaction-success" class="modal success-modal" aria-labelledby="transaction-success-title" aria-describedby="transaction-success-copy">
+    <button class="modal-close" type="button" data-close-modal aria-label="Close success message">×</button>
+    <div class="success-mark" aria-hidden="true">✓</div>
+    <p class="eyebrow">PAYMENT COMPLETE</p>
+    <h2 id="transaction-success-title">Thank you!</h2>
+    <p id="transaction-success-copy" class="modal-copy">Your payment is confirmed and the digital receipt is ready in the order summary.</p>
+    <p id="success-reference" class="success-reference"></p>
+    <button id="close-success" class="pay-button modal-done" type="button">Done</button>
+  </dialog>
 </body>
 </html>

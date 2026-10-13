@@ -11,6 +11,7 @@ const cart = new Map();
 const peso = new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' });
 const productGrid = document.querySelector('#product-grid');
 let isPaid = false;
+let pendingPaymentCents = null;
 
 function formatCents(cents) {
   const whole = Math.floor(cents / 100);
@@ -91,12 +92,14 @@ function clearPaymentMessage() {
   const message = document.querySelector('#payment-message');
   message.textContent = '';
   message.className = 'payment-message';
+  document.querySelector('#cash-input').setAttribute('aria-invalid', 'false');
 }
 
 function showPaymentError(message) {
   const output = document.querySelector('#payment-message');
   output.textContent = message;
   output.className = 'payment-message';
+  document.querySelector('#cash-input').setAttribute('aria-invalid', 'true');
 }
 
 function createTransactionReference() {
@@ -169,6 +172,25 @@ function handlePayment(event) {
     return;
   }
 
+  clearPaymentMessage();
+  pendingPaymentCents = cashCents;
+  document.querySelector('#confirm-total').textContent = formatCents(totalCents);
+  document.querySelector('#confirm-cash').textContent = formatCents(cashCents);
+  document.querySelector('#confirm-change').textContent = formatCents(changeCents);
+  document.querySelector('#payment-confirmation').showModal();
+}
+
+function confirmPayment() {
+  if (isPaid || pendingPaymentCents === null || cart.size === 0) return;
+  const cashCents = pendingPaymentCents;
+  const totalCents = getCartTotal() * 100;
+  const changeCents = cashCents - totalCents;
+  if (cashCents < totalCents || !Number.isSafeInteger(changeCents)) {
+    document.querySelector('#payment-confirmation').close();
+    showPaymentError('The order changed. Review the total and enter payment again.');
+    return;
+  }
+
   const reference = createTransactionReference();
   createReceipt(cashCents, changeCents, reference);
   const message = document.querySelector('#payment-message');
@@ -178,6 +200,21 @@ function handlePayment(event) {
   document.querySelector('#new-transaction').hidden = false;
   renderProducts();
   renderCart();
+  document.querySelector('#payment-confirmation').close();
+  document.querySelector('#success-reference').textContent = `Reference: ${reference}`;
+  document.querySelector('#transaction-success').showModal();
+}
+
+function startOrdering() {
+  document.querySelector('#landing-page').hidden = true;
+  document.querySelector('#pos-app').hidden = false;
+  document.querySelector('#product-grid button')?.focus();
+}
+
+function showLanding() {
+  document.querySelector('#pos-app').hidden = true;
+  document.querySelector('#landing-page').hidden = false;
+  document.querySelector('#start-ordering').focus();
 }
 
 function startNewTransaction() {
@@ -190,6 +227,7 @@ function startNewTransaction() {
   clearPaymentMessage();
   renderProducts();
   renderCart();
+  document.querySelector('#product-grid button')?.focus();
 }
 
 productGrid.addEventListener('click', (event) => {
@@ -204,6 +242,24 @@ document.querySelector('#cart-list').addEventListener('click', (event) => {
 
 document.querySelector('#payment-form').addEventListener('submit', handlePayment);
 document.querySelector('#new-transaction').addEventListener('click', startNewTransaction);
+document.querySelector('#start-ordering').addEventListener('click', startOrdering);
+document.querySelector('#back-to-home').addEventListener('click', showLanding);
+document.querySelector('#confirm-payment').addEventListener('click', confirmPayment);
+document.querySelector('#cancel-payment').addEventListener('click', () => {
+  document.querySelector('#payment-confirmation').close();
+});
+document.querySelectorAll('[data-close-modal]').forEach((button) => {
+  button.addEventListener('click', () => button.closest('dialog').close());
+});
+document.querySelector('#payment-confirmation').addEventListener('close', () => {
+  pendingPaymentCents = null;
+});
+document.querySelector('#close-success').addEventListener('click', () => {
+  document.querySelector('#transaction-success').close();
+});
+document.querySelector('#transaction-success').addEventListener('close', () => {
+  document.querySelector('#new-transaction').focus();
+});
 
 renderProducts();
 renderCart();
